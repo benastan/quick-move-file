@@ -1,0 +1,24 @@
+{
+  "name": "quick-move-file",
+  "main": "./lib/quick-move-file",
+  "version": "0.0.1",
+  "description": ".",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/benastan/quick-move-file"
+  },
+  "license": "MIT",
+  "engines": {
+    "atom": ">0.50.0"
+  },
+  "dependencies": {
+    "fs-plus": "*"
+  },
+  "readme": "",
+  "readmeFilename": "README.md",
+  "bugs": {
+    "url": "https://github.com/benastan/quick-move-file"
+  },
+  "homepage": "https://github.com/benastan/quick-move-file",
+  "_id": "quick-move-file@0.0.1"
+}
