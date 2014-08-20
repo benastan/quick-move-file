@@ -23,15 +23,14 @@ class QuickMoveFile extends View
     @miniEditor.hiddenInput.on 'focusout', => @remove()
 
   quickMoveFile: () ->
-    directoryPath = path.dirname(@miniEditor.getText())
-    try
-      fs.makeTreeSync(directoryPath) unless fs.existsSync(directoryPath)
-      fs.moveSync(@originalPath, newPath)
-      if repo = atom.project.getRepo()
-        repo.getPathStatus(@originalPath)
-        repo.getPathStatus(newPath)
-      @close()
-    catch error
+    newPath = @miniEditor.getText()
+    directoryPath = path.dirname(newPath)
+    fs.makeTreeSync(directoryPath) unless fs.existsSync(directoryPath)
+    fs.moveSync(@originalPath, newPath)
+    if repo = atom.project.getRepo()
+      repo.getPathStatus(@originalPath)
+      repo.getPathStatus(newPath)
+    @close()
 
   attach: () ->
     @originalPath = atom.workspace.getActiveEditor().buffer.file.path
