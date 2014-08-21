@@ -1,6 +1,6 @@
 # Quick Move File
 
-This package provides the following commands
+This package provides the following commands, any of which can be disabled in package settings or your config file:
 
 - **Quick Move File**
 

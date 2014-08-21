@@ -8,6 +8,11 @@ mkdirp = (pathToFile) ->
   directoryPath = path.dirname(pathToFile)
   fs.makeTreeSync(directoryPath) unless fs.existsSync(directoryPath)
 
+setup: (createView = true) ->
+  fs ?= require 'fs-plus'
+  path ?= require 'path'
+  quickMoveFileView = new QuickMoveFileView() if createView
+
 updateRepo = (fn) ->
   if repo = atom.project.getRepo()
     fn(repo)
@@ -16,48 +21,63 @@ deletePath = (pathToDelete) ->
   fs.removeSync(pathToDelete) if fs.existsSync(pathToDelete)
   updateRepo (repo) -> repo.getPathStatus(pathToDelete)
 
+commands =
+  quickMoveFile: =>
+    setup()
+    currentCommand = 'quickMoveFile'
+    quickMoveFileView.hint.text('Enter the new path for the file')
+    quickMoveFileView.attach()
+
+  quickDuplicateFile: =>
+    setup()
+    currentCommand = 'quickDuplicateFile'
+    quickMoveFileView.hint.text('Enter the new path for the duplicate file')
+    quickMoveFileView.attach()
+
+  quickOpenFile: =>
+    setup()
+    currentCommand = 'quickOpenFile'
+    quickMoveFileView.hint.text('Enter the path of the file to open')
+    quickMoveFileView.attach()
+
+  quickDeleteCurrentFile: =>
+    setup(false)
+    editor = atom.workspace.getActiveEditor()
+    deletePath(editor.buffer.file.path)
+    atom.workspaceView.destroyActivePaneItem()
+
+  quickDeleteFile: =>
+    setup()
+    currentCommand = 'quickDeleteFile'
+    quickMoveFileView.hint.text('Enter the path of the file to open')
+    quickMoveFileView.attach()
+
+commandMap = [
+  [ "quick-move-file", 'quickMoveFile' ]
+  [ "quick-duplicate-file", 'quickDuplicateFile' ]
+  [ "quick-open-file", 'quickOpenFile' ]
+  [ "quick-delete-current-file", 'quickDeleteCurrentFile' ]
+  [ "quick-delete-file", 'quickDeleteFile' ]
+]
+
 module.exports =
 class QuickMoveFileView extends View
+  @configDefaults:
+    quickMoveFile: true
+    quickDuplicateFile: true
+    quickOpenFile: true
+    quickDeleteCurrentFile: true
+    quickDeleteFile: true
+
   @content: () ->
     @div class: 'quick-move-file overlay from-top', =>
       @label class: 'icon', outlet: 'hint'
       @subview 'miniEditor', new EditorView(mini: true)
 
   @activate: () ->
-    atom.workspaceView.command "quick-move-file:quick-move-file", =>
-      @setup()
-      currentCommand = 'quickMoveFile'
-      quickMoveFileView.hint.text('Enter the new path for the file')
-      quickMoveFileView.attach()
-
-    atom.workspaceView.command "quick-move-file:quick-duplicate-file", =>
-      @setup()
-      currentCommand = 'quickDuplicateFile'
-      quickMoveFileView.hint.text('Enter the new path for the duplicate file')
-      quickMoveFileView.attach()
-
-    atom.workspaceView.command "quick-move-file:quick-open-file", =>
-      @setup()
-      currentCommand = 'quickOpenFile'
-      quickMoveFileView.hint.text('Enter the path of the file to open')
-      quickMoveFileView.attach()
-
-    atom.workspaceView.command "quick-move-file:quick-delete-current-file", =>
-      @setup(false)
-      editor = atom.workspace.getActiveEditor()
-      deletePath(editor.buffer.file.path)
-      atom.workspaceView.destroyActivePaneItem()
-
-    atom.workspaceView.command "quick-move-file:quick-delete-file", =>
-      @setup()
-      currentCommand = 'quickDeleteFile'
-      quickMoveFileView.hint.text('Enter the path of the file to open')
-      quickMoveFileView.attach()
-
-  @setup: (createView = true) ->
-    fs ?= require 'fs-plus'
-    path ?= require 'path'
-    quickMoveFileView = new QuickMoveFileView() if createView
+    for [command, configKey] in commandMap
+      unless atom.config.settings['quick-move-file'][configKey] is false
+        atom.workspaceView.command "quick-move-file:#{command}", commands[configKey]
 
   @deactivate: () ->
     quickMoveFileView.detach() if quickMoveFileView?
