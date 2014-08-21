@@ -8,7 +8,7 @@ mkdirp = (pathToFile) ->
   directoryPath = path.dirname(pathToFile)
   fs.makeTreeSync(directoryPath) unless fs.existsSync(directoryPath)
 
-setup: (createView = true) ->
+setup = (createView = true) ->
   fs ?= require 'fs-plus'
   path ?= require 'path'
   quickMoveFileView = new QuickMoveFileView() if createView
@@ -76,7 +76,7 @@ class QuickMoveFileView extends View
 
   @activate: () ->
     for [command, configKey] in commandMap
-      unless atom.config.settings['quick-move-file'][configKey] is false
+      unless atom.config.settings['quick-move-file']?[configKey] is false
         atom.workspaceView.command "quick-move-file:#{command}", commands[configKey]
 
   @deactivate: () ->
