@@ -1,7 +1,7 @@
 {
   "name": "quick-move-file",
   "main": "./lib/quick-move-file",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Sublime Text Quick Move File for Atom",
   "repository": {
     "type": "git",
