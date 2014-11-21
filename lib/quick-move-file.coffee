@@ -116,11 +116,12 @@ class QuickMoveFileView extends View
     @close()
 
   attach: () ->
-    @originalPath = atom.workspace.getActiveEditor().buffer.file.path
-    @miniEditor.setText(@originalPath)
-    atom.workspaceView.append(this)
-    @miniEditor.focus()
-    @miniEditor.scrollToCursorPosition()
+    if atom.workspace.getTextEditors().length > 0 && atom.workspace.getActiveEditor().buffer.file
+        @originalPath = atom.workspace.getActiveEditor().buffer.file.path
+        @miniEditor.setText(@originalPath)
+        atom.workspaceView.append(this)
+        @miniEditor.focus()
+        @miniEditor.scrollToCursorPosition()
 
   close: () ->
     @remove()
